@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - СКУПКА FUNTIME</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .admin-login-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999}
+        .admin-login-box{width:100%;max-width:360px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:32px;text-align:center}
+        .admin-login-box h2{font-size:1.1rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+        .admin-login-box p{color:var(--text-muted);font-size:.8rem;margin-bottom:20px}
+        .admin-login-box input{width:100%;padding:12px 16px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:.9rem;margin-bottom:12px;outline:none}
+        .admin-login-box input:focus{border-color:var(--green)}
+        .admin-login-box .btn{width:100%;padding:12px;font-size:.85rem}
+        .admin-login-error{color:#ef4444;font-size:.8rem;margin-top:8px;display:none}
+    </style>
+</head>
+<body>
+    <div class="admin-login-overlay" id="adminLoginOverlay">
+        <div class="admin-login-box">
+            <h2>Админ-панель</h2>
+            <p>Введите пароль для доступа</p>
+            <input type="password" id="adminPasswordInput" placeholder="Пароль" autocomplete="off">
+            <button class="btn btn-primary" onclick="checkAdminPassword()">Войти</button>
+            <div class="admin-login-error" id="adminLoginError">Неверный пароль</div>
+        </div>
+    </div>
+
+    <div class="admin-layout" id="adminLayout" style="display:none;">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon-text">FT</span>
+                    <span class="logo-text">СКУПКА</span>
+                    <span class="logo-sub">Admin</span>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                    <i data-lucide="layout-dashboard" class="nav-icon-svg"></i>
+                    <span>Дашборд</span>
+                </a>
+                <a href="#submissions" class="nav-item" data-section="submissions">
+                    <i data-lucide="file-text" class="nav-icon-svg"></i>
+                    <span>Заявки</span>
+                    <span class="nav-badge" id="pendingBadge">0</span>
+                </a>
+                <a href="#completed" class="nav-item" data-section="completed">
+                    <i data-lucide="circle-check" class="nav-icon-svg"></i>
+                    <span>Выполненные</span>
+                </a>
+                <a href="#rejected" class="nav-item" data-section="rejected">
+                    <i data-lucide="circle-x" class="nav-icon-svg"></i>
+                    <span>Отклоненные</span>
+                </a>
+                <a href="#chats" class="nav-item" data-section="chats">
+                    <i data-lucide="message-circle" class="nav-icon-svg"></i>
+                    <span>Чаты</span>
+                    <span class="nav-badge" id="chatBadge">0</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="theme-toggle" id="themeToggle">
+                    <i data-lucide="moon" class="theme-icon-svg" id="themeIcon"></i>
+                </button>
+                <a href="index.html" class="btn btn-secondary btn-sm">
+                    <i data-lucide="external-link" style="width:16px;height:16px;"></i>
+                    Вернуться на сайт
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="admin-header">
+                <div class="header-left">
+                    <button class="mobile-sidebar-btn" id="mobileSidebarBtn">
+                        <i data-lucide="menu" style="width:24px;height:24px;"></i>
+                    </button>
+                    <h1 id="pageTitle">Дашборд</h1>
+                </div>
+                <div class="header-right">
+                    <div class="admin-user">
+                        <div class="admin-avatar">A</div>
+                        <span>Администратор</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" id="content">
+                <section class="dashboard-section active" id="dashboardSection">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon pending"><i data-lucide="file-text" style="width:24px;height:24px;"></i></div>
+                            <div class="stat-info">
+                                <h3 id="pendingCount">0</h3>
+                                <p>Ожидают проверки</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon completed"><i data-lucide="circle-check" style="width:24px;height:24px;"></i></div>
+                            <div class="stat-info">
+                                <h3 id="completedCount">0</h3>
+                                <p>Выполнено</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon rejected"><i data-lucide="circle-x" style="width:24px;height:24px;"></i></div>
+                            <div class="stat-info">
+                                <h3 id="rejectedCount">0</h3>
+                                <p>Отклонено</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon revenue"><i data-lucide="banknote" style="width:24px;height:24px;"></i></div>
+                            <div class="stat-info">
+                                <h3 id="totalRevenue">0 &#8381;</h3>
+                                <p>Общая сумма</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-section">
+                        <h2>Последние заявки</h2>
+                        <div class="submissions-list" id="recentSubmissions">
+                            <div class="empty-state">
+                                <i data-lucide="inbox" style="width:48px;height:48px;margin-bottom:16px;opacity:0.5;"></i>
+                                <p>Нет заявок</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="submissions-section" id="submissionsSection">
+                    <div class="section-header">
+                        <h2>Заявки на проверку</h2>
+                        <div class="filters">
+                            <select id="serverFilter">
+                                <option value="all">Все серверы</option>
+                                <option value="1.16">1.16</option>
+                                <option value="1.21">1.21</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="submissions-list" id="pendingSubmissions">
+                        <div class="empty-state">
+                            <i data-lucide="inbox" style="width:48px;height:48px;margin-bottom:16px;opacity:0.5;"></i>
+                            <p>Нет заявок на проверку</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="submissions-section" id="completedSection">
+                    <div class="section-header">
+                        <h2>Выполненные сделки</h2>
+                    </div>
+                    <div class="submissions-list" id="completedSubmissions">
+                        <div class="empty-state">
+                            <i data-lucide="inbox" style="width:48px;height:48px;margin-bottom:16px;opacity:0.5;"></i>
+                            <p>Нет выполненных сделок</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="submissions-section" id="rejectedSection">
+                    <div class="section-header">
+                        <h2>Отклоненные заявки</h2>
+                    </div>
+                    <div class="submissions-list" id="rejectedSubmissions">
+                        <div class="empty-state">
+                            <i data-lucide="inbox" style="width:48px;height:48px;margin-bottom:16px;opacity:0.5;"></i>
+                            <p>Нет отклоненных заявок</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="submissions-section" id="chatsSection">
+                    <div class="chat-layout">
+                        <div class="chat-sidebar-list">
+                            <div class="chat-list-header">
+                                <h2>Чаты</h2>
+                                <span class="chat-count" id="chatCountLabel">0 диалогов</span>
+                            </div>
+                            <div class="chat-list-items" id="chatList">
+                                <div class="empty-state">
+                                    <i data-lucide="message-circle" style="width:48px;height:48px;margin-bottom:16px;opacity:0.5;"></i>
+                                    <p>Нет сообщений</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-window">
+                            <div class="chat-window-header" id="chatWindowHeader">
+                                <div class="chat-user-info">
+                                    <div class="chat-user-avatar" id="chatAvatar">?</div>
+                                    <div>
+                                        <div class="chat-user-name" id="chatUserName">Выберите диалог</div>
+                                        <div class="chat-user-status" id="chatUserStatus">автономный</div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" onclick="deleteChat()" id="deleteChatBtn" style="display:none;">
+                                    <i data-lucide="trash-2" style="width:16px;height:16px;"></i>
+                                </button>
+                            </div>
+                            <div class="chat-messages" id="chatMessages">
+                                <div class="chat-empty">
+                                    <i data-lucide="message-square" style="width:64px;height:64px;margin-bottom:16px;opacity:0.3;"></i>
+                                    <p>Выберите диалог для начала общения</p>
+                                </div>
+                            </div>
+                            <div class="chat-input-area" id="chatInputArea" style="display:none;">
+                                <div class="chat-input-wrapper">
+                                    <input type="text" id="chatInput" placeholder="Напишите сообщение..." maxlength="1000">
+                                    <button class="chat-send-btn" id="chatSendBtn" onclick="sendAdminMessage()">
+                                        <i data-lucide="send" style="width:18px;height:18px;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="detailsModal">
+        <div class="modal-content details-modal">
+            <div class="modal-header">
+                <h3>Детали заявки</h3>
+                <button class="modal-close" onclick="closeDetailsModal()">
+                    <i data-lucide="x" style="width:20px;height:20px;"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="detailsContent">
+            </div>
+            <div class="modal-footer" id="detailsActions">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+    <script src="admin.js"></script>
+    <script>
+        var ADMIN_PASS = 'a4mboucosh56';
+        function checkAdminPassword() {
+            var pw = document.getElementById('adminPasswordInput').value;
+            if (pw === ADMIN_PASS) {
+                document.getElementById('adminLoginOverlay').style.display = 'none';
+                document.getElementById('adminLayout').style.display = 'flex';
+                localStorage.setItem('ft_admin_auth', '1');
+                lucide.createIcons();
+            } else {
+                document.getElementById('adminLoginError').style.display = 'block';
+                document.getElementById('adminPasswordInput').value = '';
+            }
+        }
+        document.getElementById('adminPasswordInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') checkAdminPassword();
+        });
+        if (localStorage.getItem('ft_admin_auth') === '1') {
+            document.getElementById('adminLoginOverlay').style.display = 'none';
+            document.getElementById('adminLayout').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

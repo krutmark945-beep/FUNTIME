@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - СКУПКА FUNTIME</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <div class="bg-particles" id="particles"></div>
+
+    <div class="auth-page">
+        <div class="auth-card" id="loginCard">
+            <a href="index.html" class="logo">
+                <span class="logo-icon-text">FT</span>
+                <span class="logo-text">Скупка</span>
+                <span class="logo-sub">Funtime</span>
+            </a>
+            <h2>Вход</h2>
+            <p class="auth-subtitle">Войдите в аккаунт</p>
+
+            <div class="auth-error" id="loginError"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPass">Пароль</label>
+                    <input type="password" id="loginPass" required placeholder="Введите пароль">
+                </div>
+
+                <div class="captcha-box">
+                    <div class="captcha-challenge" id="loginCaptchaText">A7x9</div>
+                    <div class="captcha-input">
+                        <input type="text" id="loginCaptchaInput" placeholder="Код" required maxlength="6">
+                    </div>
+                    <button type="button" class="captcha-refresh" onclick="refreshCaptcha('login')">&#8635;</button>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Войти</button>
+            </form>
+
+            <p class="auth-switch">Нет аккаунта? <a href="#" onclick="showRegister()">Регистрация</a></p>
+        </div>
+
+        <div class="auth-card" id="registerCard" style="display:none;">
+            <a href="index.html" class="logo">
+                <span class="logo-icon-text">FT</span>
+                <span class="logo-text">Скупка</span>
+                <span class="logo-sub">Funtime</span>
+            </a>
+            <h2>Регистрация</h2>
+            <p class="auth-subtitle">Создайте аккаунт</p>
+
+            <div class="auth-error" id="registerError"></div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regName">Имя</label>
+                    <input type="text" id="regName" required placeholder="Ваше имя">
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="regPass">Пароль</label>
+                    <input type="password" id="regPass" required placeholder="Минимум 6 символов" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="regPass2">Повторите пароль</label>
+                    <input type="password" id="regPass2" required placeholder="Повторите пароль">
+                </div>
+
+                <div class="captcha-box">
+                    <div class="captcha-challenge" id="regCaptchaText">K3mP</div>
+                    <div class="captcha-input">
+                        <input type="text" id="regCaptchaInput" placeholder="Код" required maxlength="6">
+                    </div>
+                    <button type="button" class="captcha-refresh" onclick="refreshCaptcha('reg')">&#8635;</button>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Зарегистрироваться</button>
+            </form>
+
+            <p class="auth-switch">Есть аккаунт? <a href="#" onclick="showLogin()">Войти</a></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function generateCaptcha() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+            let result = '';
+            for (let i = 0; i < 4; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        let currentLoginCaptcha = generateCaptcha();
+        let currentRegCaptcha = generateCaptcha();
+
+        function refreshCaptcha(type) {
+            if (type === 'login') {
+                currentLoginCaptcha = generateCaptcha();
+                document.getElementById('loginCaptchaText').textContent = currentLoginCaptcha;
+            } else {
+                currentRegCaptcha = generateCaptcha();
+                document.getElementById('regCaptchaText').textContent = currentRegCaptcha;
+            }
+        }
+
+        function showRegister() {
+            document.getElementById('loginCard').style.display = 'none';
+            document.getElementById('registerCard').style.display = 'block';
+            refreshCaptcha('reg');
+        }
+
+        function showLogin() {
+            document.getElementById('registerCard').style.display = 'none';
+            document.getElementById('loginCard').style.display = 'block';
+            refreshCaptcha('login');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const captchaInput = document.getElementById('loginCaptchaInput').value;
+            const errorEl = document.getElementById('loginError');
+
+            if (captchaInput !== currentLoginCaptcha) {
+                errorEl.textContent = 'Неверная капча';
+                errorEl.classList.add('show');
+                refreshCaptcha('login');
+                return;
+            }
+
+            const email = document.getElementById('loginEmail').value;
+            const users = JSON.parse(localStorage.getItem('ft_users') || '[]');
+            const user = users.find(u => u.email === email);
+
+            if (!user) {
+                errorEl.textContent = 'Аккаунт не найден';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            localStorage.setItem('ft_currentUser', JSON.stringify(user));
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const captchaInput = document.getElementById('regCaptchaInput').value;
+            const errorEl = document.getElementById('registerError');
+
+            if (captchaInput !== currentRegCaptcha) {
+                errorEl.textContent = 'Неверная капча';
+                errorEl.classList.add('show');
+                refreshCaptcha('reg');
+                return;
+            }
+
+            const pass = document.getElementById('regPass').value;
+            const pass2 = document.getElementById('regPass2').value;
+
+            if (pass !== pass2) {
+                errorEl.textContent = 'Пароли не совпадают';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+
+            let users = JSON.parse(localStorage.getItem('ft_users') || '[]');
+            if (users.find(u => u.email === email)) {
+                errorEl.textContent = 'Email уже зарегистрирован';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            const user = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                password: pass,
+                date: new Date().toISOString()
+            };
+
+            users.push(user);
+            localStorage.setItem('ft_users', JSON.stringify(users));
+            localStorage.setItem('ft_currentUser', JSON.stringify(user));
+            window.location.href = 'index.html';
+        });
+
+        refreshCaptcha('login');
+        refreshCaptcha('reg');
+    </script>
+</body>
+</html>

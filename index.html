@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СКУПКА FUNTIME</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* === INTRO ANIMATION === */
+        .intro{position:fixed;inset:0;z-index:9999;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+        .intro.done{opacity:0;visibility:hidden;pointer-events:none}
+        .intro-ring{width:120px;height:120px;border-radius:50%;border:2px solid transparent;border-top-color:#22c55e;border-right-color:#22c55e;animation:introSpin 1.2s linear infinite;position:relative;margin-bottom:32px}
+        .intro-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;border:2px solid transparent;border-bottom-color:#16a34a;border-left-color:#16a34a;animation:introSpin 1.8s linear infinite reverse}
+        .intro-ring::after{content:'';position:absolute;inset:20px;border-radius:50%;border:2px solid transparent;border-top-color:#4ade80;animation:introSpin 1s linear infinite}
+        @keyframes introSpin{100%{transform:rotate(360deg)}}
+        .intro-text{display:flex;gap:4px;margin-bottom:8px}
+        .intro-letter{font-size:3rem;font-weight:900;text-transform:uppercase;letter-spacing:6px;color:transparent;background:linear-gradient(135deg,#22c55e,#4ade80);-webkit-background-clip:text;background-clip:text;opacity:0;transform:translateY(30px) scale(.5);animation:introLetter .5s cubic-bezier(.68,-.55,.265,1.55) forwards}
+        .intro-letter:nth-child(1){animation-delay:.3s}
+        .intro-letter:nth-child(2){animation-delay:.4s}
+        .intro-letter:nth-child(3){animation-delay:.5s}
+        .intro-letter:nth-child(4){animation-delay:.6s}
+        .intro-letter:nth-child(5){animation-delay:.7s}
+        .intro-letter:nth-child(6){animation-delay:.8s}
+        .intro-letter:nth-child(7){animation-delay:.9s}
+        @keyframes introLetter{to{opacity:1;transform:translateY(0) scale(1)}}
+        .intro-sub{font-size:.7rem;color:#444;text-transform:uppercase;letter-spacing:4px;opacity:0;animation:introFade .5s ease 1.1s forwards}
+        .intro-line{width:0;height:2px;background:linear-gradient(90deg,transparent,#22c55e,transparent);margin-top:16px;animation:introLine 1s ease 1.3s forwards}
+        @keyframes introLine{to{width:200px}}
+        @keyframes introFade{to{opacity:1}}
+        .intro-glow{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.12),transparent 70%);animation:introGlow 2s ease-in-out infinite;pointer-events:none}
+        @keyframes introGlow{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.3);opacity:1}}
+        .intro-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+        .intro-p{position:absolute;width:3px;height:3px;background:#22c55e;border-radius:50%;opacity:0;animation:introP 2s ease-in-out infinite}
+        @keyframes introP{0%{opacity:0;transform:translateY(0)}20%{opacity:.6}80%{opacity:.6}100%{opacity:0;transform:translateY(-200px)}}
+
+        .nv-wrap{position:relative;z-index:1}
+
+        /* === NAV === */
+        .nv-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:14px 0;background:rgba(12,12,12,.88);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.04);transition:all .3s}
+        .nv-nav.scrolled{background:rgba(12,12,12,.96);box-shadow:0 4px 30px rgba(0,0,0,.4)}
+        .nv-inner{max-width:1100px;margin:0 auto;padding:0 28px;display:flex;align-items:center;justify-content:space-between}
+        .nv-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
+        .nv-logo-box{width:36px;height:36px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(34,197,94,.4);flex-shrink:0;position:relative;overflow:hidden}
+        .nv-logo-box::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(255,255,255,.15),transparent 30%);animation:logoSpin 4s linear infinite}
+        @keyframes logoSpin{100%{transform:rotate(360deg)}}
+        .nv-logo-txt{font-size:.95rem;font-weight:800;letter-spacing:.5px}
+        .nv-logo-sub{color:#555;font-size:.75rem;font-weight:500}
+        .nv-menu{display:flex;gap:4px}
+        .nv-menu a{color:#777;text-decoration:none;font-size:.78rem;font-weight:600;padding:7px 14px;border-radius:6px;transition:all .2s;text-transform:uppercase;letter-spacing:.5px}
+        .nv-menu a:hover{color:#22c55e;background:rgba(34,197,94,.06)}
+        .nv-right{display:flex;align-items:center;gap:8px}
+        .nv-theme{width:34px;height:34px;border-radius:8px;background:#141414;border:1px solid #222;color:#888;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+        .nv-theme:hover{border-color:#22c55e;color:#22c55e}
+        .nv-theme svg{width:16px;height:16px}
+        .nv-user{display:none;align-items:center;gap:6px;padding:3px 10px 3px 3px;background:#141414;border:1px solid #222;border-radius:50px}
+        .nv-user.show{display:flex}
+        .nv-user-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.65rem;color:#fff}
+        .nv-user-name{font-size:.72rem;font-weight:600;color:#ccc}
+        .nv-user-out{background:none;border:none;color:#555;cursor:pointer;padding:2px;display:flex}
+        .nv-user-out:hover{color:#ef4444}
+        .nv-user-out svg{width:12px;height:12px}
+        .nv-login{color:#888;text-decoration:none;font-size:.78rem;font-weight:600;padding:7px 14px;border-radius:6px;border:1px solid #222;transition:all .2s}
+        .nv-login:hover{border-color:#22c55e;color:#22c55e}
+        .nv-cta{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;text-decoration:none;font-size:.78rem;font-weight:700;padding:8px 16px;border-radius:6px;transition:all .2s;box-shadow:0 2px 10px rgba(34,197,94,.3)}
+        .nv-cta:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(34,197,94,.5)}
+
+        /* === HERO === */
+        .nv-hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:100px 28px 60px}
+        .nv-hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.07),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;animation:heroGlow 6s ease-in-out infinite}
+        @keyframes heroGlow{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.6}50%{transform:translate(-50%,-50%) scale(1.15);opacity:1}}
+        .nv-hero-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(34,197,94,.04) 1px,transparent 1px);background-size:24px 24px;pointer-events:none}
+        .nv-hero-content{text-align:center;position:relative;z-index:2;max-width:700px}
+        .nv-hero-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:50px;color:#22c55e;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:24px;opacity:0;animation:heroUp .5s ease forwards}
+        .nv-hero-chip svg{width:12px;height:12px}
+        .nv-hero-h{font-size:5rem;font-weight:900;line-height:.92;letter-spacing:-3px;text-transform:uppercase;margin-bottom:18px;opacity:0;animation:heroUp .6s ease .1s forwards}
+        .nv-hero-h em{font-style:normal;background:linear-gradient(135deg,#22c55e,#4ade80);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .nv-hero-p{font-size:1.05rem;color:#777;max-width:440px;margin:0 auto 30px;line-height:1.7;opacity:0;animation:heroUp .6s ease .2s forwards}
+        .nv-hero-btns{display:flex;gap:10px;justify-content:center;margin-bottom:48px;opacity:0;animation:heroUp .6s ease .3s forwards}
+        .nv-hero-metrics{display:flex;gap:40px;justify-content:center;opacity:0;animation:heroUp .6s ease .4s forwards}
+        .nv-metric{text-align:center}
+        .nv-metric b{display:block;font-size:1.8rem;font-weight:900;color:#22c55e;line-height:1}
+        .nv-metric span{font-size:.65rem;color:#555;text-transform:uppercase;letter-spacing:1px}
+        @keyframes heroUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+        /* === FLOATING CARDS === */
+        .nv-float-cards{position:absolute;right:6%;top:50%;transform:translateY(-50%);z-index:1;pointer-events:none}
+        .nv-fcard{width:200px;background:rgba(20,20,20,.92);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;position:absolute;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+        .nv-fcard:nth-child(1){top:0;right:0;animation:fcard1 7s ease-in-out infinite}
+        .nv-fcard:nth-child(2){top:70px;right:50px;animation:fcard2 7s ease-in-out infinite .5s;opacity:.7}
+        .nv-fcard:nth-child(3){top:140px;right:15px;animation:fcard3 7s ease-in-out infinite 1s;opacity:.4}
+        @keyframes fcard1{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+        @keyframes fcard2{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+        @keyframes fcard3{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+        .nv-fcard-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+        .nv-fcard-ico{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .nv-fcard-t{font-size:.7rem;font-weight:700;text-transform:uppercase}
+        .nv-fcard-s{font-size:.58rem;color:#555}
+        .nv-fcard-rows{margin-bottom:10px}
+        .nv-fcard-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.65rem}
+        .nv-fcard-row:last-child{border:none}
+        .nv-fcard-row span:first-child{color:#555}
+        .nv-fcard-row span:last-child{color:#22c55e;font-weight:700}
+        .nv-fcard-bot{display:flex;align-items:center;justify-content:space-between}
+        .nv-fcard-status{padding:2px 7px;border-radius:4px;font-size:.55rem;font-weight:800;text-transform:uppercase;background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.15)}
+        .nv-fcard-price{font-size:.82rem;font-weight:900;color:#22c55e}
+
+        /* === SECTIONS === */
+        .nv-section{padding:80px 0;position:relative}
+        .nv-section:nth-child(even){background:#0a0a0a}
+        .nv-sec-head{text-align:center;margin-bottom:40px}
+        .nv-sec-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.1);border-radius:4px;color:#22c55e;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+        .nv-sec-tag svg{width:10px;height:10px}
+        .nv-sec-title{font-size:2.2rem;font-weight:900;text-transform:uppercase;letter-spacing:-.5px}
+        .nv-sec-title em{font-style:normal;color:#22c55e}
+        .nv-sec-desc{color:#666;font-size:.88rem;margin-top:6px}
+
+        /* === PRICING CARDS === */
+        .nv-price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:900px;margin:0 auto}
+        .nv-pcard{background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:24px;position:relative;transition:all .3s;overflow:hidden}
+        .nv-pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#22c55e,#16a34a);transform:scaleX(0);transition:transform .3s}
+        .nv-pcard:hover{border-color:rgba(34,197,94,.25);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.5)}
+        .nv-pcard:hover::before{transform:scaleX(1)}
+        .nv-pcard.pop{border-color:rgba(34,197,94,.2)}
+        .nv-pcard.pop::before{transform:scaleX(1)}
+        .nv-pcard-badge{position:absolute;top:10px;right:10px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:2px 8px;border-radius:4px;font-size:.55rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+        .nv-pcard-ico{width:40px;height:40px;border-radius:8px;background:rgba(34,197,94,.06);display:flex;align-items:center;justify-content:center;color:#22c55e;border:1px solid rgba(34,197,94,.1);margin-bottom:12px}
+        .nv-pcard-ico svg{width:18px;height:18px}
+        .nv-pcard-ico.r{background:rgba(239,68,68,.06);color:#ef4444;border-color:rgba(239,68,68,.1)}
+        .nv-pcard-ico.b{background:rgba(59,130,246,.06);color:#3b82f6;border-color:rgba(59,130,246,.1)}
+        .nv-pcard h3{font-size:.88rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+        .nv-pcard .sub{font-size:.68rem;color:#555;margin-bottom:12px}
+        .nv-pcard-price{font-size:1.4rem;font-weight:900;color:#22c55e;margin-bottom:14px}
+        .nv-pcard-price.sm{font-size:.95rem}
+        .nv-pcard-list{list-style:none;margin-bottom:16px}
+        .nv-pcard-list li{display:flex;align-items:center;gap:6px;padding:5px 0;font-size:.75rem;color:#888}
+        .nv-pcard-list li svg{width:12px;height:12px;color:#22c55e;flex-shrink:0}
+
+        /* === BENEFITS GRID === */
+        .nv-ben-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:900px;margin:0 auto}
+        .nv-ben{background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:22px;transition:all .3s;position:relative;overflow:hidden}
+        .nv-ben::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#22c55e,#16a34a);transform:scaleX(0);transition:transform .3s}
+        .nv-ben:hover{border-color:rgba(34,197,94,.2);transform:translateY(-2px)}
+        .nv-ben:hover::after{transform:scaleX(1)}
+        .nv-ben-ico{width:34px;height:34px;border-radius:6px;background:rgba(34,197,94,.06);display:flex;align-items:center;justify-content:center;color:#22c55e;border:1px solid rgba(34,197,94,.08);margin-bottom:10px}
+        .nv-ben-ico svg{width:15px;height:15px}
+        .nv-ben h3{font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px}
+        .nv-ben p{color:#666;font-size:.74rem;line-height:1.6}
+
+        /* === REVIEWS === */
+        .nv-rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:900px;margin:0 auto}
+        .nv-rev{background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:18px;transition:all .3s}
+        .nv-rev:hover{border-color:rgba(34,197,94,.2)}
+        .nv-rev-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+        .nv-rev-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;color:#fff}
+        .nv-rev-name{font-size:.78rem;font-weight:700}
+        .nv-rev-srv{font-size:.6rem;color:#22c55e;font-weight:700;text-transform:uppercase}
+        .nv-rev-stars{margin-left:auto;display:flex;gap:1px}
+        .nv-rev-stars svg{width:11px;height:11px;fill:#22c55e;color:#22c55e}
+        .nv-rev-txt{color:#777;font-size:.76rem;line-height:1.6;margin-bottom:6px}
+        .nv-rev-date{font-size:.6rem;color:#444}
+
+        /* === SELL === */
+        .nv-sell{display:grid;grid-template-columns:1fr 1fr;max-width:900px;margin:0 auto;background:#141414;border:1px solid #1e1e1e;border-radius:12px;overflow:hidden}
+        .nv-sell-left{padding:40px;border-right:1px solid #1e1e1e}
+        .nv-sell-right{padding:32px;background:#111}
+        .nv-sell-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.1);border-radius:4px;color:#22c55e;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+        .nv-sell-tag svg{width:10px;height:10px}
+        .nv-sell h2{font-size:1.6rem;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;margin-bottom:6px}
+        .nv-sell h2 em{font-style:normal;color:#22c55e}
+        .nv-sell-desc{color:#666;font-size:.82rem;margin-bottom:24px}
+        .nv-step{display:flex;gap:12px;margin-bottom:16px;position:relative;padding-left:18px}
+        .nv-step::before{content:'';position:absolute;left:4px;top:8px;bottom:-16px;width:1.5px;background:#222}
+        .nv-step:last-child::before{display:none}
+        .nv-step-dot{width:9px;height:9px;border-radius:50%;background:#22c55e;flex-shrink:0;margin-top:4px;box-shadow:0 0 8px rgba(34,197,94,.3);position:relative;z-index:1}
+        .nv-step h4{font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;margin-bottom:1px}
+        .nv-step p{font-size:.72rem;color:#666}
+        .nv-sell h3{font-size:.92rem;font-weight:800;text-transform:uppercase;letter-spacing:.3px;margin-bottom:14px;text-align:center}
+
+        /* === FORM === */
+        .nv-fg{margin-bottom:10px}
+        .nv-fg label{display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#aaa;margin-bottom:4px}
+        .nv-fg label svg{width:10px;height:10px;vertical-align:middle;margin-right:3px}
+        .nv-fi{width:100%;padding:8px 11px;border-radius:6px;border:1px solid #222;background:#0e0e0e;color:#eee;font-size:.8rem;font-family:inherit;transition:all .2s}
+        .nv-fi:focus{outline:none;border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.08)}
+        .nv-fi::placeholder{color:#444}
+        select.nv-fi{cursor:pointer}
+        textarea.nv-fi{resize:vertical}
+
+        /* === CHAT === */
+        .nv-chat{max-width:600px;margin:0 auto;background:#141414;border:1px solid #1e1e1e;border-radius:10px;overflow:hidden}
+        .nv-chat-head{padding:10px 14px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;gap:8px}
+        .nv-chat-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.4)}
+        .nv-chat-name{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+        .nv-chat-on{font-size:.6rem;color:#22c55e;margin-left:auto}
+        .nv-chat-body{padding:14px;min-height:200px;display:flex;flex-direction:column;gap:6px}
+        .nv-msg{max-width:72%;padding:8px 12px;border-radius:8px;font-size:.76rem;line-height:1.5;animation:msgPop .2s ease}
+        @keyframes msgPop{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+        .nv-msg.in{align-self:flex-start;background:#0e0e0e;border:1px solid #1e1e1e;border-bottom-left-radius:2px}
+        .nv-msg.out{align-self:flex-end;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border-bottom-right-radius:2px;box-shadow:0 2px 8px rgba(34,197,94,.3)}
+        .nv-msg-t{font-size:.55rem;opacity:.5;margin-top:2px}
+        .nv-chat-foot{padding:8px 12px;border-top:1px solid #1e1e1e;display:flex;gap:6px}
+        .nv-chat-inp{flex:1;padding:7px 11px;border-radius:6px;border:1px solid #222;background:#0e0e0e;color:#eee;font-size:.76rem;font-family:inherit}
+        .nv-chat-inp:focus{outline:none;border-color:#22c55e}
+        .nv-chat-send{width:30px;height:30px;border-radius:6px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+        .nv-chat-send:hover{transform:scale(1.08)}
+        .nv-chat-send svg{width:13px;height:13px}
+
+        /* === TYPING === */
+        .nv-typing{display:flex;gap:3px;padding:8px 12px;align-self:flex-start;background:#0e0e0e;border:1px solid #1e1e1e;border-radius:8px;border-bottom-left-radius:2px;animation:msgPop .2s ease}
+        .nv-tdot{width:5px;height:5px;border-radius:50%;background:#444;animation:tdot 1.4s ease-in-out infinite}
+        .nv-tdot:nth-child(2){animation-delay:.2s}
+        .nv-tdot:nth-child(3){animation-delay:.4s}
+        @keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-5px);opacity:1}}
+
+
+
+        /* === PARTNER === */
+        .nv-partner{text-align:center;padding:60px 28px;background:linear-gradient(180deg,#0a0a0a,#111)}
+        .nv-partner svg{width:36px;height:36px;color:#22c55e;margin-bottom:12px}
+        .nv-partner h2{font-size:1.8rem;font-weight:900;text-transform:uppercase;letter-spacing:-.5px;margin-bottom:6px}
+        .nv-partner h2 em{font-style:normal;color:#22c55e}
+        .nv-partner p{color:#666;font-size:.88rem;margin-bottom:20px}
+
+        /* === FOOTER === */
+        .nv-foot{border-top:1px solid #1a1a1a;padding:36px 0 16px;background:#080808}
+        .nv-foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:20px;margin-bottom:20px}
+        .nv-foot-brand p{color:#444;font-size:.72rem;margin-top:6px;max-width:200px}
+        .nv-foot h4{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:#555;margin-bottom:8px}
+        .nv-foot a{display:block;color:#666;text-decoration:none;font-size:.74rem;padding:2px 0;transition:color .2s}
+        .nv-foot a:hover{color:#22c55e}
+        .nv-foot-copy{text-align:center;padding-top:14px;border-top:1px solid #1a1a1a;font-size:.62rem;color:#333}
+
+        /* === FAQ === */
+        .nv-faq{max-width:700px;margin:0 auto}
+        .nv-faq-item{background:#141414;border:1px solid #1e1e1e;border-radius:8px;margin-bottom:8px;overflow:hidden;transition:all .3s}
+        .nv-faq-item:hover{border-color:rgba(34,197,94,.2)}
+        .nv-faq-q{padding:14px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;transition:all .2s;user-select:none}
+        .nv-faq-q:hover{color:#22c55e}
+        .nv-faq-q svg{width:16px;height:16px;color:#555;transition:transform .3s;flex-shrink:0}
+        .nv-faq-item.open .nv-faq-q svg{transform:rotate(180deg);color:#22c55e}
+        .nv-faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding:0 16px}
+        .nv-faq-item.open .nv-faq-a{max-height:200px;padding:0 16px 14px}
+        .nv-faq-a p{color:#777;font-size:.78rem;line-height:1.7}
+
+        /* === SCROLL TOP === */
+        .nv-top{position:fixed;bottom:24px;right:24px;width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;visibility:hidden;transform:translateY(10px);transition:all .3s;box-shadow:0 4px 16px rgba(34,197,94,.4)}
+        .nv-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+        .nv-top:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(34,197,94,.6)}
+        .nv-top svg{width:18px;height:18px}
+
+        /* === ONLINE STATUS === */
+        .nv-online{position:fixed;bottom:24px;left:24px;display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(20,20,20,.9);backdrop-filter:blur(8px);border:1px solid #1e1e1e;border-radius:50px;z-index:999;font-size:.7rem;color:#888}
+        .nv-online-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,.5);animation:onlinePulse 2s ease-in-out infinite}
+        @keyframes onlinePulse{0%,100%{opacity:1}50%{opacity:.4}}
+        .nv-online b{color:#22c55e;font-weight:700}
+
+        /* === BTN LOADING === */
+        .nv-cta.loading{pointer-events:none;position:relative;color:transparent}
+        .nv-cta.loading::after{content:'';position:absolute;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:btnSpin .6s linear infinite;top:50%;left:50%;margin:-9px 0 0 -9px}
+        @keyframes btnSpin{100%{transform:rotate(360deg)}}
+
+        /* === MODAL === */
+        .nv-modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(8px)}
+        .nv-modal.on{display:flex}
+        .nv-modal-box{background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:32px;text-align:center;max-width:300px;animation:modalPop .3s ease}
+        @keyframes modalPop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+        .nv-modal-ico{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 4px 16px rgba(34,197,94,.3)}
+        .nv-modal-box h3{font-size:1rem;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+        .nv-modal-box p{color:#666;font-size:.82rem;margin-bottom:14px}
+
+        /* === RESPONSIVE === */
+        @media(max-width:900px){
+            .nv-float-cards{display:none}
+            .nv-hero-h{font-size:3rem}
+            .nv-price-grid,.nv-ben-grid,.nv-rev-grid{grid-template-columns:1fr 1fr}
+            .nv-sell{grid-template-columns:1fr}
+            .nv-sell-left{border-right:none;border-bottom:1px solid #1e1e1e}
+            .nv-foot-grid{grid-template-columns:1fr 1fr}
+        }
+        @media(max-width:600px){
+            .nv-menu{display:none}
+            .nv-hero-h{font-size:2rem;letter-spacing:-1px}
+            .nv-hero-metrics{flex-direction:column;gap:12px}
+            .nv-price-grid,.nv-ben-grid,.nv-rev-grid{grid-template-columns:1fr}
+            .nv-sell-left{padding:24px 16px}
+            .nv-sell-right{padding:20px 16px}
+            .nv-foot-grid{grid-template-columns:1fr}
+            .nv-hero{padding:80px 0 30px}
+            .nv-section{padding:40px 0}
+            .nv-hero-badge{font-size:.6rem;padding:5px 10px}
+            .nv-hero-sub{font-size:.82rem}
+            .nv-hero-btns{flex-direction:column;gap:8px}
+            .nv-hero-btns .nv-cta{width:100%;padding:12px;font-size:.78rem}
+            .nv-price-card,.nv-ben-card,.nv-rev-card{padding:16px}
+            .nv-price-card h3{font-size:.85rem}
+            .nv-price-big{font-size:1.2rem}
+            .nv-ben-card h3{font-size:.82rem}
+            .nv-ben-card p{font-size:.75rem}
+            .nv-rev-card{min-width:240px}
+            .nv-rev-txt{font-size:.75rem}
+            .nv-sell{padding:40px 0}
+            .nv-sell h2{font-size:1.3rem}
+            .nv-step-num{width:32px;height:32px;font-size:.75rem}
+            .nv-step-txt h4{font-size:.82rem}
+            .nv-step-txt p{font-size:.72rem}
+            .nv-chat{margin:0 12px}
+            .nv-chat-body{min-height:160px;padding:10px}
+            .nv-msg{max-width:85%;font-size:.72rem;padding:7px 10px}
+            .nv-chat-inp{font-size:.72rem;padding:6px 10px}
+            .nv-chat-send{width:28px;height:28px}
+            .nv-chat-send svg{width:12px;height:12px}
+            .nv-partner{padding:40px 20px}
+            .nv-partner h2{font-size:1.3rem}
+            .nv-partner p{font-size:.8rem}
+            .nv-faq-q{font-size:.78rem;padding:12px 14px}
+            .nv-faq-a p{font-size:.72rem}
+            .nv-foot{padding:28px 0 12px}
+            .nv-foot-brand p{font-size:.68rem}
+            .nv-foot h4{font-size:.62rem}
+            .nv-foot a{font-size:.7rem}
+            .nv-foot-copy{font-size:.58rem}
+            .nv-top{bottom:16px;right:16px;width:36px;height:36px}
+            .nv-top svg{width:16px;height:16px}
+            .nv-online{bottom:16px;left:16px;font-size:.65rem;padding:5px 10px}
+            .nv-rev-nav{gap:8px}
+            .nv-rev-btn{width:30px;height:30px}
+            .nv-rev-btn svg{width:14px;height:14px}
+        }
+        @media(max-width:380px){
+            .nv-hero-h{font-size:1.6rem}
+            .nv-hero-sub{font-size:.78rem}
+            .nv-inner{padding:0 12px}
+            .nv-logo-txt{font-size:.9rem}
+            .nv-price-big{font-size:1rem}
+        }
+    </style>
+</head>
+<body>
+    <div class="intro" id="introLoader">
+        <div class="intro-glow"></div>
+        <div class="intro-particles" id="introParticles"></div>
+        <div class="intro-ring"></div>
+        <div class="intro-text">
+            <span class="intro-letter">F</span>
+            <span class="intro-letter">U</span>
+            <span class="intro-letter">N</span>
+            <span class="intro-letter">T</span>
+            <span class="intro-letter">I</span>
+            <span class="intro-letter">M</span>
+            <span class="intro-letter">E</span>
+        </div>
+        <div class="intro-sub">Скупка аккаунтов</div>
+        <div class="intro-line"></div>
+    </div>
+
+    <div class="bg-particles" id="particles"></div>
+
+    <nav class="nv-nav" id="mainNav">
+        <div class="nv-inner">
+            <a href="#" class="nv-logo">
+                <span class="nv-logo-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14.5 2L6 9.5L2 14L3 15L7 14.5L6.5 18L8 19L9.5 14.5L14 16L21 6.5L14.5 2Z" fill="#fff" stroke="#fff" stroke-width="0.5"/>
+                        <path d="M6 9.5L9.5 14.5" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+                        <path d="M14.5 2L21 6.5" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+                        <circle cx="3.5" cy="14.5" r="1.5" fill="#fff"/>
+                    </svg>
+                </span>
+                <span class="nv-logo-txt">Скупка</span>
+                <span class="nv-logo-sub">Funtime</span>
+            </a>
+            <div class="nv-menu">
+                <a href="#sec-price">Цены</a>
+                <a href="#sec-ben">Преимущества</a>
+                <a href="#sec-rev">Отзывы</a>
+                <a href="#sec-faq">FAQ</a>
+                <a href="#sec-chat">Чат</a>
+                <a href="#sec-sell">Продать</a>
+            </div>
+            <div class="nv-right">
+                <button class="nv-theme" id="themeToggle"><i data-lucide="moon" id="themeIcon"></i></button>
+                <div class="nv-user" id="userIndicator">
+                    <div class="nv-user-av" id="userAvatar">U</div>
+                    <span class="nv-user-name" id="userName">User</span>
+                    <button class="nv-user-out" id="userLogoutBtn"><i data-lucide="log-out"></i></button>
+                </div>
+                <a href="auth.html" class="nv-login" id="loginBtn">Войти</a>
+                <a href="#sec-sell" class="nv-cta">Продать</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="nv-wrap">
+        <section class="nv-hero">
+            <div class="nv-hero-glow"></div>
+            <div class="nv-hero-dots"></div>
+            <div class="nv-float-cards">
+                <div class="nv-fcard">
+                    <div class="nv-fcard-top">
+                        <div class="nv-fcard-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14.5 2L6 9.5L2 14L3 15L7 14.5L6.5 18L8 19L9.5 14.5L14 16L21 6.5L14.5 2Z" fill="#fff"/></svg></div>
+                        <div><div class="nv-fcard-t">Funtime</div><div class="nv-fcard-s">1.21</div></div>
+                    </div>
+                    <div class="nv-fcard-rows">
+                        <div class="nv-fcard-row"><span>Привилегия</span><span>VIP</span></div>
+                        <div class="nv-fcard-row"><span>Предметы</span><span>142</span></div>
+                        <div class="nv-fcard-row"><span>Возраст</span><span>2 года</span></div>
+                    </div>
+                    <div class="nv-fcard-bot">
+                        <span class="nv-fcard-status">Готов</span>
+                        <span class="nv-fcard-price">Инд.</span>
+                    </div>
+                </div>
+                <div class="nv-fcard">
+                    <div class="nv-fcard-top">
+                        <div class="nv-fcard-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14.5 2L6 9.5L2 14L3 15L7 14.5L6.5 18L8 19L9.5 14.5L14 16L21 6.5L14.5 2Z" fill="#fff"/></svg></div>
+                        <div><div class="nv-fcard-t">Funtime</div><div class="nv-fcard-s">1.16</div></div>
+                    </div>
+                    <div class="nv-fcard-rows">
+                        <div class="nv-fcard-row"><span>Привилегия</span><span>MVP</span></div>
+                        <div class="nv-fcard-row"><span>Предметы</span><span>89</span></div>
+                    </div>
+                    <div class="nv-fcard-bot">
+                        <span class="nv-fcard-status">Готов</span>
+                        <span class="nv-fcard-price">Инд.</span>
+                    </div>
+                </div>
+                <div class="nv-fcard">
+                    <div class="nv-fcard-top">
+                        <div class="nv-fcard-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14.5 2L6 9.5L2 14L3 15L7 14.5L6.5 18L8 19L9.5 14.5L14 16L21 6.5L14.5 2Z" fill="#fff"/></svg></div>
+                        <div><div class="nv-fcard-t">Funtime</div><div class="nv-fcard-s">Любой</div></div>
+                    </div>
+                    <div class="nv-fcard-rows">
+                        <div class="nv-fcard-row"><span>Привилегия</span><span>Legend</span></div>
+                    </div>
+                    <div class="nv-fcard-bot">
+                        <span class="nv-fcard-status">Готов</span>
+                        <span class="nv-fcard-price">Макс.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="nv-hero-content">
+                <div class="nv-hero-chip"><i data-lucide="shield-check"></i> Скупка аккаунтов</div>
+                <h1 class="nv-hero-h">Продай свой<br><em>аккаунт</em><br>за 5 минут</h1>
+                <p class="nv-hero-p">Быстрая и безопасная сделка. Честная цена, моментальная выплата. Без посредников.</p>
+                <div class="nv-hero-btns">
+                    <a href="#sec-sell" class="nv-cta" style="padding:12px 28px;font-size:.88rem">Продать аккаунт <i data-lucide="arrow-right" style="width:15px;height:15px;vertical-align:middle;margin-left:4px"></i></a>
+                    <a href="#sec-price" class="nv-login" style="padding:12px 28px;font-size:.88rem">Узнать цену</a>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="nv-section" id="sec-price">
+            <div class="nv-sec-head">
+                <div class="nv-sec-tag"><i data-lucide="tag"></i> Тарифы</div>
+                <h2 class="nv-sec-title">Честные <em>цены</em></h2>
+                <p class="nv-sec-desc">Лучшие цены на рынке. Индивидуальный подход.</p>
+            </div>
+            <div class="nv-price-grid">
+                <div class="nv-pcard">
+                    <div class="nv-pcard-ico"><i data-lucide="server"></i></div>
+                    <h3>Сервер 1.16</h3>
+                    <div class="sub">Стандартный</div>
+                    <div class="nv-pcard-price">от 300 ₽</div>
+                    <ul class="nv-pcard-list">
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Быстрая проверка</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Моментальная выплата</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Без комиссий</li>
+                    </ul>
+                    <a href="#sec-sell" class="nv-cta" style="width:100%;text-align:center;display:block;text-decoration:none;font-size:.75rem;padding:9px">Продать</a>
+                </div>
+                <div class="nv-pcard pop">
+                    <div class="nv-pcard-badge">Хит</div>
+                    <div class="nv-pcard-ico r"><i data-lucide="flame"></i></div>
+                    <h3>Сервер 1.21</h3>
+                    <div class="sub">Новейший</div>
+                    <div class="nv-pcard-price">от 500 ₽</div>
+                    <ul class="nv-pcard-list">
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Быстрая проверка</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Моментальная выплата</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Без комиссий</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Приоритет</li>
+                    </ul>
+                    <a href="#sec-sell" style="width:100%;text-align:center;display:block;text-decoration:none;font-size:.75rem;padding:9px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border-radius:6px;font-weight:700">Продать</a>
+                </div>
+                <div class="nv-pcard">
+                    <div class="nv-pcard-ico b"><i data-lucide="trophy"></i></div>
+                    <h3>Высокая привилегия</h3>
+                    <div class="sub">VIP аккаунты</div>
+                    <div class="nv-pcard-price sm">от 1500 ₽</div>
+                    <ul class="nv-pcard-list">
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Индивидуальная оценка</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> Максимальная цена</li>
+                        <li><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg> VIP поддержка</li>
+                    </ul>
+                    <a href="#sec-sell" class="nv-login" style="width:100%;text-align:center;display:block;text-decoration:none;font-size:.75rem;padding:9px">Связаться</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="nv-section" id="sec-ben" style="background:#0a0a0a">
+            <div class="nv-sec-head">
+                <div class="nv-sec-tag"><i data-lucide="zap"></i> Преимущества</div>
+                <h2 class="nv-sec-title">Почему <em>мы</em></h2>
+                <p class="nv-sec-desc">Простой, быстрый и безопасный процесс.</p>
+            </div>
+            <div class="nv-ben-grid">
+                <div class="nv-ben">
+                    <div class="nv-ben-ico"><i data-lucide="zap"></i></div>
+                    <h3>Быстро</h3>
+                    <p>Проверка за 15 минут. Деньги моментально на карту.</p>
+                </div>
+                <div class="nv-ben">
+                    <div class="nv-ben-ico"><i data-lucide="lock"></i></div>
+                    <h3>Безопасно</h3>
+                    <p>Конфиденциальность. Удаление данных после сделки.</p>
+                </div>
+                <div class="nv-ben">
+                    <div class="nv-ben-ico"><i data-lucide="banknote"></i></div>
+                    <h3>Дорого</h3>
+                    <p>Лучшие цены на рынке.</p>
+                </div>
+                <div class="nv-ben">
+                    <div class="nv-ben-ico"><i data-lucide="handshake"></i></div>
+                    <h3>Честно</h3>
+                    <p>Без скрытых комиссий.</p>
+                </div>
+                <div class="nv-ben">
+                    <div class="nv-ben-ico"><i data-lucide="refresh-cw"></i></div>
+                    <h3>Партнёрство</h3>
+                    <p>Бонусы за повторные продажи.</p>
+                </div>
+                <div class="nv-ben">
+                    <div class="nv-ben-ico"><i data-lucide="gamepad-2"></i></div>
+                    <h3>Все серверы</h3>
+                    <p>Скупка 1.16 и 1.21.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="nv-section" id="sec-rev">
+            <div class="nv-sec-head">
+                <div class="nv-sec-tag"><i data-lucide="star"></i> Отзывы</div>
+                <h2 class="nv-sec-title">Клиенты <em>говорят</em></h2>
+                <p class="nv-sec-desc">1500+ довольных продавцов.</p>
+            </div>
+            <div class="nv-rev-grid">
+                <div class="nv-rev">
+                    <div class="nv-rev-top">
+                        <div class="nv-rev-av">Д</div>
+                        <div><div class="nv-rev-name">Дмитрий_К</div><div class="nv-rev-srv">1.21</div></div>
+                        <div class="nv-rev-stars"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                    </div>
+                    <p class="nv-rev-txt">Продал аккаунт с легендой. Деньги получил через 10 минут на карту. Всё четко!</p>
+                    <span class="nv-rev-date">2 дня назад</span>
+                </div>
+                <div class="nv-rev">
+                    <div class="nv-rev-top">
+                        <div class="nv-rev-av">А</div>
+                        <div><div class="nv-rev-name">Алексей_MVP</div><div class="nv-rev-srv">1.16</div></div>
+                        <div class="nv-rev-stars"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                    </div>
+                    <p class="nv-rev-txt">Сравнивал с другими скупщиками — тут предложили больше. Рекомендую!</p>
+                    <span class="nv-rev-date">5 дней назад</span>
+                </div>
+                <div class="nv-rev">
+                    <div class="nv-rev-top">
+                        <div class="nv-rev-av">М</div>
+                        <div><div class="nv-rev-name">Максим_В</div><div class="nv-rev-srv">1.21</div></div>
+                        <div class="nv-rev-stars"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="#22c55e" stroke="#22c55e" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                    </div>
+                    <p class="nv-rev-txt">Продавал в первый раз. Ребята всё объяснили, помогли с переводом. Нормальные люди!</p>
+                    <span class="nv-rev-date">1 неделю назад</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="nv-section" id="sec-sell" style="background:#0a0a0a">
+            <div class="nv-sec-head">
+                <div class="nv-sec-tag"><i data-lucide="send"></i> Продажа</div>
+                <h2 class="nv-sec-title">Продайте <em>аккаунт</em></h2>
+                <p class="nv-sec-desc">Заполните форму — свяжемся за 15 минут.</p>
+            </div>
+            <div class="nv-sell">
+                <div class="nv-sell-left">
+                    <div class="nv-step">
+                        <div class="nv-step-dot"></div>
+                        <div><h4>Заполните форму</h4><p>Данные аккаунта и контакты</p></div>
+                    </div>
+                    <div class="nv-step">
+                        <div class="nv-step-dot"></div>
+                        <div><h4>Оценка</h4><p>Проверим и предложим цену</p></div>
+                    </div>
+                    <div class="nv-step">
+                        <div class="nv-step-dot"></div>
+                        <div><h4>Деньги</h4><p>Получите оплату моментально</p></div>
+                    </div>
+                </div>
+                <div class="nv-sell-right">
+                    <h3>Форма продажи</h3>
+                    <form id="sellForm">
+                        <div class="nv-fg">
+                            <label><i data-lucide="user"></i> Никнейм</label>
+                            <input class="nv-fi" type="text" name="nickname" required placeholder="Ваш никнейм">
+                        </div>
+                        <div class="nv-fg">
+                            <label><i data-lucide="key-round"></i> Пароль</label>
+                            <input class="nv-fi" type="password" name="password" required placeholder="Для проверки">
+                        </div>
+                        <div class="nv-fg">
+                            <label><i data-lucide="server"></i> Сервер</label>
+                            <select class="nv-fi" name="server" required>
+                                <option value="">Выберите</option>
+                                <option value="1.16">1.16</option>
+                                <option value="1.21">1.21</option>
+                            </select>
+                        </div>
+                        <div class="nv-fg">
+                            <label><i data-lucide="crown"></i> Привилегия</label>
+                            <input class="nv-fi" type="text" name="privilege" required placeholder="Ваша привилегия">
+                        </div>
+                        <div class="nv-fg">
+                            <label><i data-lucide="message-circle"></i> Discord</label>
+                            <input class="nv-fi" type="text" name="contact" required placeholder="Ваш Discord">
+                        </div>
+                        <div class="nv-fg">
+                            <label><i data-lucide="message-square-text"></i> Описание</label>
+                            <textarea class="nv-fi" name="description" rows="3" placeholder="Особенности аккаунта"></textarea>
+                        </div>
+                        <button type="submit" class="nv-cta" style="width:100%;text-align:center;display:block;padding:11px;font-size:.82rem;margin-top:4px;border:none;cursor:pointer">Отправить <i data-lucide="send" style="width:13px;height:13px;vertical-align:middle;margin-left:3px"></i></button>
+                        <p style="text-align:center;color:#444;font-size:.6rem;margin-top:6px">Нажимая кнопку, вы соглашаетесь с условиями</p>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="nv-section" id="sec-chat">
+            <div class="nv-sec-head">
+                <div class="nv-sec-tag"><i data-lucide="message-circle"></i> Чат</div>
+                <h2 class="nv-sec-title">Связь <em>с нами</em></h2>
+                <p class="nv-sec-desc">Задавайте вопросы онлайн.</p>
+            </div>
+            <div class="nv-chat">
+                <div class="nv-chat-head">
+                    <div class="nv-chat-dot"></div>
+                    <span class="nv-chat-name">СКУПКА FUNTIME</span>
+                    <span class="nv-chat-on">В сети</span>
+                </div>
+                <div class="nv-chat-body" id="chatMessages">
+                    <div class="nv-msg in">Привет! Задавайте вопросы по продаже аккаунтов.<div class="nv-msg-t">12:00</div></div>
+                </div>
+                <div class="nv-chat-foot">
+                    <input class="nv-chat-inp" id="chatInput" placeholder="Сообщение..." onkeypress="if(event.key==='Enter')sendMessage()">
+                    <button class="nv-chat-send" onclick="sendMessage()"><i data-lucide="send"></i></button>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="nv-section" id="sec-faq" style="background:#0a0a0a">
+            <div class="nv-sec-head">
+                <div class="nv-sec-tag"><i data-lucide="help-circle"></i> FAQ</div>
+                <h2 class="nv-sec-title">Вопросы <em>и ответы</em></h2>
+                <p class="nv-sec-desc">Часто задаваемые вопросы</p>
+            </div>
+            <div class="nv-faq">
+                <div class="nv-faq-item">
+                    <div class="nv-faq-q" onclick="this.parentElement.classList.toggle('open')">
+                        Как продать аккаунт?
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                    <div class="nv-faq-a"><p>Заполните форму продажи, указав никнейм, пароль, сервер и привилегию. Мы свяжемся с вами в течение 15 минут и предложим цену.</p></div>
+                </div>
+                <div class="nv-faq-item">
+                    <div class="nv-faq-q" onclick="this.parentElement.classList.toggle('open')">
+                        Сколько времени занимает сделка?
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                    <div class="nv-faq-a"><p>Проверка аккаунта занимает от 5 до 15 минут. После подтверждения деньги переводятся моментально.</p></div>
+                </div>
+                <div class="nv-faq-item">
+                    <div class="nv-faq-q" onclick="this.parentElement.classList.toggle('open')">
+                        Это безопасно?
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                    <div class="nv-faq-a"><p>Да. Мы работаем через проверку, все данные защищены SSL-шифрованием. После сделки информация удаляется.</p></div>
+                </div>
+                <div class="nv-faq-item">
+                    <div class="nv-faq-q" onclick="this.parentElement.classList.toggle('open')">
+                        Какие серверы выкупаете?
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                    <div class="nv-faq-a"><p>Мы выкупаем аккаунты с серверов 1.16 и 1.21. Независимо от версии, предложим лучшую цену.</p></div>
+                </div>
+                <div class="nv-faq-item">
+                    <div class="nv-faq-q" onclick="this.parentElement.classList.toggle('open')">
+                        Как получить деньги?
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                    <div class="nv-faq-a"><p>Перевод на банковскую карту, электронный кошелек или криптовалюту — на ваш выбор.</p></div>
+                </div>
+                <div class="nv-faq-item">
+                    <div class="nv-faq-q" onclick="this.parentElement.classList.toggle('open')">
+                        Можно ли продать аккаунт с высокой привилегией?
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    </div>
+                    <div class="nv-faq-a"><p>Да! Аккаунты с VIP и другими высокими привилегиями оцениваются индивидуально и получают максимальную цену.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="nv-partner">
+            <i data-lucide="users"></i>
+            <h2>Ищем <em>партнёров</em></h2>
+            <p>Повышенные цены для постоянных продавцов.</p>
+            <a href="#sec-sell" class="nv-cta" style="padding:12px 28px;font-size:.85rem;display:inline-block;text-decoration:none">Стать партнёром</a>
+        </section>
+
+        <footer class="nv-foot">
+            <div class="container">
+                <div class="nv-foot-grid">
+                    <div class="nv-foot-brand">
+                        <a href="#" class="nv-logo" style="margin-bottom:4px">
+                            <span class="nv-logo-box">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14.5 2L6 9.5L2 14L3 15L7 14.5L6.5 18L8 19L9.5 14.5L14 16L21 6.5L14.5 2Z" fill="#fff" stroke="#fff" stroke-width="0.5"/>
+                                    <path d="M6 9.5L9.5 14.5" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
+                                    <path d="M14.5 2L21 6.5" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>
+                                    <circle cx="3.5" cy="14.5" r="1.5" fill="#fff"/>
+                                </svg>
+                            </span>
+                            <span class="nv-logo-txt">Скупка</span>
+                            <span class="nv-logo-sub">Funtime</span>
+                        </a>
+                        <p>Быстрая и безопасная скупка аккаунтов.</p>
+                    </div>
+                    <div><h4>Навигация</h4><a href="#sec-price">Цены</a><a href="#sec-ben">Преимущества</a><a href="#sec-rev">Отзывы</a><a href="#sec-chat">Чат</a></div>
+                    <div><h4>Услуги</h4><a href="#sec-sell">Продать</a><a href="#">1.16</a><a href="#">1.21</a></div>
+                    <div><h4>Контакты</h4><a href="#">Discord</a><a href="#">Email</a></div>
+                </div>
+                <div class="nv-foot-copy">&copy; 2026 СКУПКА FUNTIME</div>
+            </div>
+        </footer>
+    </div>
+
+    <div class="nv-modal" id="successModal">
+        <div class="nv-modal-box">
+            <div class="nv-modal-ico"><i data-lucide="check" style="width:28px;height:28px;color:#fff"></i></div>
+            <h3>Отправлено!</h3>
+            <p>Свяжемся в течение 15 минут</p>
+            <button class="nv-cta" onclick="closeModal()" style="border:none;cursor:pointer;padding:9px 24px;font-size:.8rem">Закрыть</button>
+        </div>
+    </div>
+
+    <div class="nv-online">
+        <div class="nv-online-dot"></div>
+        <span>На сайте: <b id="onlineCount">7</b> чел.</span>
+    </div>
+
+    <button class="nv-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m18 15-6-6-6 6"/></svg>
+    </button>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Intro
+        setTimeout(function(){
+            var el=document.getElementById('introLoader');
+            if(el)el.classList.add('done');
+        },2500);
+
+        // Nav scroll
+        window.addEventListener('scroll',function(){
+            document.getElementById('mainNav').classList.toggle('scrolled',window.scrollY>50);
+        });
+
+        // Firebase
+        var firebaseConfig = {
+            apiKey: "AIzaSyBWdDBd6B4HyeTyTOvGr7u3JW5zstN-4O4",
+            authDomain: "funtime-skupka.firebaseapp.com",
+            databaseURL: "https://funtime-skupka-default-rtdb.firebaseio.com",
+            projectId: "funtime-skupka",
+            storageBucket: "funtime-skupka.firebasestorage.app",
+            messagingSenderId: "658134903965",
+            appId: "1:658134903965:web:3337f4e241909f5862f874",
+            measurementId: "G-WL413JJBJE"
+        };
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.database();
+
+        // Chat - Firebase real-time
+        let myName = getUserName();
+
+        function getUserName() {
+            var user = JSON.parse(localStorage.getItem('ft_currentUser') || 'null');
+            return user ? user.name : 'Аноним';
+        }
+
+        function getChatId(u1, u2) {
+            return [u1, u2].sort().join('_');
+        }
+
+        function loadChatHistory() {
+            var chatId = getChatId(myName, 'admin');
+            db.ref('messages/' + chatId).orderByChild('time').on('value', function(snap) {
+                var box = document.getElementById('chatMessages');
+                box.innerHTML = '';
+                snap.forEach(function(child) {
+                    var msg = child.val();
+                    var d = new Date(msg.time);
+                    var t = d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+                    var div = document.createElement('div');
+                    div.className = msg.sender === myName ? 'nv-msg out' : 'nv-msg in';
+                    div.innerHTML = msg.text + '<div class="nv-msg-t">' + t + '</div>';
+                    box.appendChild(div);
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
+        function sendMessage() {
+            var inp = document.getElementById('chatInput');
+            if (!inp) return;
+            var txt = inp.value.trim();
+            if (!txt) return;
+            inp.value = '';
+
+            var chatId = getChatId(myName, 'admin');
+            db.ref('messages/' + chatId).push({
+                sender: myName,
+                receiver: 'admin',
+                text: txt,
+                time: new Date().toISOString()
+            });
+        }
+
+        loadChatHistory();
+
+        // Counter
+        document.querySelectorAll('.nv-metric b[data-count]').forEach(function(el){
+            const obs=new IntersectionObserver(function(entries){
+                entries.forEach(function(e){
+                    if(e.isIntersecting){
+                        const target=parseInt(el.dataset.count);
+                        let cur=0;
+                        const step=target/125;
+                        const timer=setInterval(function(){
+                            cur+=step;
+                            if(cur>=target){el.textContent=target;clearInterval(timer)}
+                            else{el.textContent=Math.floor(cur)}
+                        },16);
+                        obs.unobserve(el);
+                    }
+                });
+            },{threshold:.5});
+            obs.observe(el);
+        });
+
+
+
+        // Theme
+        (function(){
+            const t=document.getElementById('themeToggle');
+            const ico=document.getElementById('themeIcon');
+            if(!t||!ico)return;
+            t.addEventListener('click',function(){
+                const h=document.documentElement;
+                const cur=h.getAttribute('data-theme');
+                const next=cur==='dark'?'light':'dark';
+                h.setAttribute('data-theme',next);
+                localStorage.setItem('ft_theme',next);
+                ico.setAttribute('data-lucide',next==='dark'?'moon':'sun');
+                lucide.createIcons();
+            });
+        })();
+
+        // User
+        (function(){
+            const ind=document.getElementById('userIndicator');
+            const av=document.getElementById('userAvatar');
+            const nm=document.getElementById('userName');
+            const btn=document.getElementById('loginBtn');
+            const out=document.getElementById('userLogoutBtn');
+            if(!ind||!btn)return;
+            const raw=localStorage.getItem('ft_currentUser');
+            if(!raw)return;
+            let u;try{u=JSON.parse(raw)}catch(e){return}
+            if(!u||!u.name)return;
+            const ini=u.name.split(' ').map(function(w){return w[0]}).join('').toUpperCase().slice(0,2);
+            av.textContent=ini;
+            nm.textContent=u.name.split(' ')[0];
+            ind.classList.add('show');
+            btn.style.display='none';
+            if(out)out.addEventListener('click',function(){
+                localStorage.removeItem('ft_currentUser');
+                ind.classList.remove('show');
+                btn.style.display='';
+            });
+        })();
+
+        // Scroll top
+        window.addEventListener('scroll',function(){
+            var b=document.getElementById('scrollTopBtn');
+            if(b)b.classList.toggle('show',window.scrollY>400);
+        });
+
+        // Online counter
+        (function(){
+            var el=document.getElementById('onlineCount');
+            if(!el)return;
+            function update(){
+                var v=3+Math.floor(Math.random()*12);
+                el.textContent=v;
+            }
+            update();
+            setInterval(update,8000);
+        })();
+
+        // Form button loading
+        document.getElementById('sellForm').addEventListener('submit',function(e){
+            e.preventDefault();
+            var btn=e.target.querySelector('button[type="submit"]');
+            if(btn){
+                btn.classList.add('loading');
+                setTimeout(function(){btn.classList.remove('loading')},2000);
+            }
+            var fd=new FormData(e.target);
+            var data=Object.fromEntries(fd);
+            var subs=JSON.parse(localStorage.getItem('ft_submissions')||'[]');
+            subs.push({id:Date.now(),nickname:data.nickname,password:data.password,server:data.server,privilege:data.privilege,contact:data.contact,description:data.description,status:'pending',date:new Date().toISOString()});
+            localStorage.setItem('ft_submissions',JSON.stringify(subs));
+            e.target.reset();
+            document.getElementById('successModal').classList.add('on');
+        });
+
+        function closeModal(){document.getElementById('successModal').classList.remove('on')}
+    </script>
+</body>
+</html>
